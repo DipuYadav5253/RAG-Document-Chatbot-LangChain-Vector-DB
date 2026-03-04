@@ -1,0 +1,10 @@
+Dipu Yadav has work experience as a:
+
+1. Junior ML Engineer at Digitaldict Technology Pvt. Ltd. (Sept 2024 – Dec 2024)
+   - Built customer segmentation pipeline
+   - Automated Python/Pandas/SQL ETL pipeline
+   - Created Tableau dashboards presenting ML insights
+
+2. Associate Developer at HAZHTeq Innovations (Feb 2023 – Jun 2023)
+
+Note: The context does not provide detailed information about his role and responsibilities at HAZHTeq Innovations.

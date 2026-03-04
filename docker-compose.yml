@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  rag-chatbot:
+    build: .
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./docs:/app/docs
+      - ./faiss_index:/app/faiss_index
+      - ./mlruns:/app/mlruns
+    env_file:
+      - .env
+
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:latest
+    ports:
+      - "5001:5001"
+    command: mlflow server --backend-store-uri sqlite:///mlruns/mlflow.db --host 0.0.0.0 --port 5001
+    volumes:
+      - ./mlruns:/mlruns

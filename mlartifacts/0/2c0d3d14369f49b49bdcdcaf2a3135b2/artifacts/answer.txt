@@ -1,0 +1,21 @@
+Dipu's skills include:
+
+1. Technical Skills:
+   - Frameworks: PyTorch, TensorFlow/Keras, Scikit-learn, HuggingFace Transformers
+   - Computer Vision: OpenCV, CNN, Siamese Networks, SIFT, object detection, TF Lite (edge/mobile)
+   - NLP/LLM: LangChain, FAISS vector store, RAG pipelines, text classification, embeddings
+   - MLOps: MLflow (experiment tracking & model registry), Docker, GitHub Actions, Render, AWS S3
+   - Data Engineering: Python, Pandas, SQL, ETL pipelines, feature engineering, data augmentation
+   - Visualization: Matplotlib, Seaborn, Tableau, Weights & Biases
+   - Backend: Django, FastAPI, REST APIs — model serving and inference endpoints
+
+2. Languages:
+   - English (Fluent, C1)
+   - French (Beginner, A2)
+   - Hindi (Native)
+
+3. Soft Skills and Experience:
+   - End-to-end model development experience across computer vision, NLP, and predictive analytics
+   - Experience with ML engineer roles, including building and deploying models
+   - Research project experience
+   - Experience with customer segmentation pipeline, ETL pipeline automation, and creating dashboards for ML insights.

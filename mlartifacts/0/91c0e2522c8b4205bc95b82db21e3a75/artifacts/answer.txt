@@ -1,0 +1,9 @@
+Dipu has built the following projects:
+
+1. RAG Document Chatbot — using LangChain + Vector DB
+2. Geo-Localization Android App — as part of research at ESIGELEC (supervised by Prof. Karim Hammoudi)
+
+Additionally, he has worked on other projects, including:
+
+1. DriveEazy AI safety system (as part of AceHack)
+2. LandChain blockchain project (as part of MozoHack)
