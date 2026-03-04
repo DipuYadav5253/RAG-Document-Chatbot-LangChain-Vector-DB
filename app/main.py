@@ -1,14 +1,26 @@
 from fastapi import FastAPI, UploadFile, File
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from app.embeddings import load_and_split, create_vector_store
 from app.rag_pipeline import ask_question, ask_question_with_tracking
 import shutil
 import os
 
+from fastapi.middleware.cors import CORSMiddleware
+
 app = FastAPI(
     title="RAG Document Chatbot",
     description="Upload any PDF and ask questions about it using AI",
     version="1.0.0"
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 class QuestionRequest(BaseModel):
@@ -23,7 +35,6 @@ async def health():
 
 @app.post("/upload-pdf")
 async def upload_pdf(file: UploadFile = File(...)):
-    """Upload a PDF and build the vector store"""
     os.makedirs("docs", exist_ok=True)
     path = f"docs/{file.filename}"
     with open(path, "wb") as f:
@@ -31,14 +42,13 @@ async def upload_pdf(file: UploadFile = File(...)):
     chunks = load_and_split(path)
     create_vector_store(chunks)
     return {
-        "message": f"PDF processed successfully!",
+        "message": "PDF processed successfully!",
         "filename": file.filename,
         "chunks_created": len(chunks)
     }
 
 @app.post("/ask")
 async def ask(request: QuestionRequest):
-    """Ask a question about your uploaded documents"""
     result = ask_question(request.question)
     return {
         "question": request.question,
@@ -48,10 +58,15 @@ async def ask(request: QuestionRequest):
 
 @app.post("/ask-tracked")
 async def ask_tracked(request: QuestionWithTrackingRequest):
-    """Ask a question with MLflow experiment tracking"""
     result = ask_question_with_tracking(request.question)
     return {
         "question": request.question,
         "answer": result["answer"],
         "response_time_seconds": result["response_time"]
     }
+
+@app.get("/")
+async def serve_ui():
+    return FileResponse("static/index.html")
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
