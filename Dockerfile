@@ -16,7 +16,4 @@ COPY . .
 RUN mkdir -p docs faiss_index mlruns
 
 # Expose any port (Render overrides with $PORT)
-EXPOSE 8000
-
-# Run FastAPI with dynamic port
-CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port $PORT"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "${PORT:-8001}"]
