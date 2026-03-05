@@ -15,5 +15,4 @@ COPY . .
 # Create necessary folders
 RUN mkdir -p docs faiss_index mlruns
 
-# Expose any port (Render overrides with $PORT)
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "${PORT:-8001}"]
+CMD uvicorn app.main:app --host 0.0.0.0 --port $PORT 
