@@ -1,13 +1,12 @@
 from fastapi import FastAPI, UploadFile, File
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from app.embeddings import load_and_split, create_vector_store
 from app.rag_pipeline import ask_question, ask_question_with_tracking
 import shutil
 import os
-
-from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
     title="RAG Document Chatbot",
@@ -23,11 +22,25 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.on_event("startup")
+async def startup_event():
+    os.makedirs("docs", exist_ok=True)
+    os.makedirs("faiss_index", exist_ok=True)
+    os.makedirs("static", exist_ok=True)
+
 class QuestionRequest(BaseModel):
     question: str
 
 class QuestionWithTrackingRequest(BaseModel):
     question: str
+
+@app.head("/")
+async def head_root():
+    return JSONResponse(content={})
+
+@app.get("/")
+async def serve_ui():
+    return FileResponse("static/index.html")
 
 @app.get("/health")
 async def health():
@@ -65,14 +78,9 @@ async def ask_tracked(request: QuestionWithTrackingRequest):
         "response_time_seconds": result["response_time"]
     }
 
-@app.get("/")
-async def serve_ui():
-    return FileResponse("static/index.html")
-
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 if __name__ == "__main__":
     import uvicorn
-    import os
-    port = int(os.environ.get("PORT", 8000))
+    port = int(os.environ.get("PORT", 8001))
     uvicorn.run(app, host="0.0.0.0", port=port)
