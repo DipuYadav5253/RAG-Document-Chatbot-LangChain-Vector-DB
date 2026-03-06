@@ -54,6 +54,11 @@ async def upload_pdf(file: UploadFile = File(...)):
         shutil.copyfileobj(file.file, f)
     chunks = load_and_split(path)
     create_vector_store(chunks)
+    
+    # Reset retriever cache so new index is loaded
+    import app.rag_pipeline as rp
+    rp._retriever = None
+    
     return {
         "message": "PDF processed successfully!",
         "filename": file.filename,

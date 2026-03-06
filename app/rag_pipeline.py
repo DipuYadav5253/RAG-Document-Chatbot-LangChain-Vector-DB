@@ -5,18 +5,21 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 import os
 import time
-import mlflow
 from dotenv import load_dotenv
 
 load_dotenv()
 
-# Cache retriever so it loads only once
 _retriever = None
 
 def load_retriever():
     global _retriever
     if _retriever is not None:
         return _retriever
+    
+    # Check if faiss_index exists before loading
+    if not os.path.exists("faiss_index/index.faiss"):
+        raise ValueError("No document uploaded yet. Please upload a PDF first.")
+    
     embeddings = HuggingFaceEmbeddings(
         model_name="sentence-transformers/all-MiniLM-L6-v2"
     )
@@ -61,21 +64,22 @@ Answer:""")
     }
 
 def ask_question_with_tracking(question: str):
-    mlflow.set_tracking_uri("http://localhost:5001")
-    mlflow.set_experiment("rag-chatbot")
+    start = time.time()
+    result = ask_question(question)
+    response_time = time.time() - start
 
-    with mlflow.start_run():
-        mlflow.log_param("question", question)
-        mlflow.log_param("embedding_model", "all-MiniLM-L6-v2")
-        mlflow.log_param("llm_model", "llama-3.3-70b-versatile")
-        mlflow.log_param("top_k_chunks", 6)
-
-        start = time.time()
-        result = ask_question(question)
-        response_time = time.time() - start
-
-        mlflow.log_metric("response_time_seconds", response_time)
-        mlflow.log_param("answer_length", len(result["answer"]))
+    # Only track with MLflow if running locally
+    if os.getenv("MLFLOW_TRACKING_URI"):
+        try:
+            import mlflow
+            mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI"))
+            mlflow.set_experiment("rag-chatbot")
+            with mlflow.start_run():
+                mlflow.log_param("question", question)
+                mlflow.log_param("llm_model", "llama-3.3-70b-versatile")
+                mlflow.log_metric("response_time_seconds", response_time)
+        except Exception:
+            pass  # Don't crash if MLflow unavailable
 
     return {
         "answer": result["answer"],
